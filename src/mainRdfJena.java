@@ -1,7 +1,9 @@
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStream;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -40,53 +42,20 @@ public class mainRdfJena {
 	
 	
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		
-		
-		
-//		Dataset dataset = RDFDataMgr.loadDataset("/home/biar/Desktop/provaNew.nq");
-//		Model model = dataset.getDefaultModel();
-//		DatasetGraphInMemory dgm = (DatasetGraphInMemory) dataset.asDatasetGraph();
-//		DatasetGraph dtGraph = dataset.asDatasetGraph();
-//		System.out.println(dtGraph.getDefaultGraph());
-//		System.out.println("size dataset "+dtGraph.size());
-//		System.out.println("isempty" + dtGraph.isEmpty());
-//		Iterator<String> quads = dataset.asDatasetGraph();
-//		System.out.println(dtGraph.getDefaultGraph());
-//		Model graph = ModelFactory.createModelForGraph(dtGraph.getDefaultGraph());
-		
-//		dtGraph.listGraphNodes().listGraphNodes();
-//		Graph graph = dtGraph.getDefaultGraph();
-//		ExtendedIterator<Triple> quads = graph.find();
-//		while (quads.hasNext()) {
-//			quads.toString();
-			System.out.println("");
-			
-//		}
-//		Model model1 = model;
-//		  StmtIterator stmt = dtModel.listStatements();
-//		  while (stmt.hasNext;()){
-//		    Statement statement = stmt.next();
-//		    Resource subject = statement.getSubject();
-//		    Property pred = statement.getPredicate();
-//		    RDFNode object = statement.getObject();
-//		    System.out.println("soggetto "+ subject);
-//		    System.out.println("pred "+ pred);
-//		    System.out.println("oggetto "+ object);
-//
-//		    Object res = null;
-//		    @SuppressWarnings("unchecked")
-//		    Resource resource = object.as((Class<Resource>) res);
-//		    dtModel.createResource(subject).addProperty(pred,dtModel.createResource(resource));
-//		  }
-////		
+					
+            	DecimalFormat df = new DecimalFormat("####0.00");
+
+				BufferedWriter outputFile = null;
+
 				File resultFile = new File("/home/felagund/Scrivania/BIGDATA PROJECT/resultAnalyses.txt");
-				BufferedWriter outputFile;
 				
 				Dataset dataset=null;
 		       	try {
+
 		       		outputFile = new BufferedWriter(new FileWriter(resultFile));
-		       		outputFile.append("BigData-hw1-aa2016-2017");
+		       		outputFile.append("\nBigData-hw1-aa2016-2017\n");
 
 		       		
 		       		
@@ -107,17 +76,17 @@ public class mainRdfJena {
 		            	allTripleOfGraph.addAll(allTripleSubGraph);
 		            	
 //		                System.out.println("name nodo "+node.getURI());
-		                outputFile.append("Node : "+node.getURI());
+//		                outputFile.append("\nNode : "+node.getURI());
 		                
 //		                dsg.add(quad);
 		            }
-	                outputFile.append("");
+	                outputFile.append("\n");
 
 		            System.out.println("fine  while ( nodes.hasNext() ) ");
 		            
-		            outputFile.append("RESULT ANALYSES");
-		            outputFile.append("1. Compute the number of distinct nodes and edges in the corresponding RDF graph.");
-		            outputFile.append("  Number of distinct nodes: "+allTripleOfGraph.size());
+		            outputFile.append("\nRESULT ANALYSES\n");
+		            outputFile.append("\n1. Compute the number of distinct nodes and edges in the corresponding RDF graph.");
+		            outputFile.append("\n  Number of distinct nodes: "+allTripleOfGraph.size());
 		           
 		            
 		            double emptyContext=0;
@@ -142,37 +111,39 @@ public class mainRdfJena {
 										
 						
 					}
-		            System.out.println("fine for (Triple) ");
-		            outputFile.append("2. Compute the outdegree distribution: does it follow a power law? Plot the result in a figure.");
-		            outputFile.append("3. Compute the indegree distribution: does it follow a power law? Plot the result in a figure.");
+		            System.out.println("\nfine for (Triple) ");
+		            outputFile.append("\n2. Compute the outdegree distribution: does it follow a power law? Plot the result in a figure.");
+		            outputFile.append("\n3. Compute the indegree distribution: does it follow a power law? Plot the result in a figure.");
 		            
 		            
-		            outputFile.append("4. Which are the 10 nodes with maximum outdegree, and what are their respective degrees?");
-	            	outputFile.append("");
+		            outputFile.append("\n4. Which are the 10 nodes with maximum outdegree, and what are their respective degrees?");
+	            	outputFile.append("\n");
 
 		            
 		            
-		            outputFile.append("5. Compute the percentage of triples with empty context, the percentage of triples whose subject is a blank node, and the percentage of triples whose object is a blank node.");
-		            outputFile.append("  Percentage Subject blank nodes: " + (double)allTripleOfGraph.size()/subjectBlankNode);
-		            outputFile.append("  Percentage Object blank nodes: " + (double)allTripleOfGraph.size()/objectBlankNode);
+		            outputFile.append("\n5. Compute the percentage of triples with empty context, the percentage of triples whose subject is a blank node, and the percentage of triples whose object is a blank node.");
+		            
+		            double mediaSubjectblank = (double)allTripleOfGraph.size()/subjectBlankNode;
+		            double mediaObjectblank = (double)allTripleOfGraph.size()/objectBlankNode;
 
-		            
-		            
-		            
+		            outputFile.append("\n  Percentage Subject blank nodes: " + df.format(mediaSubjectblank)+"%");
+		            outputFile.append("\n  Percentage Object blank nodes: " + df.format(mediaObjectblank)+"%");
+
+ 
+		            System.out.println("fine");
 		            
 		            dataset.commit();
+		            outputFile.close();
 		            
 		        } catch ( Exception e ) {
 		            e.printStackTrace(System.err);
 		            dataset.abort();
+		            outputFile.close();
 		        } finally {
 		            dataset.end();
+		            outputFile.close();
 		        }
 //		        RDFDataMgr.write(System.out, dataset, Lang.NQUADS);
-		    
-		
-		
-	}
-	
-	
+
+	}	
 }
