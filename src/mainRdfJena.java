@@ -59,7 +59,7 @@ public class mainRdfJena {
 
 		       		
 		       		
-		       		dataset = RDFDataMgr.loadDataset("/home/felagund/Scrivania/BIGDATA PROJECT/RDF/btc-2010-chunk-000/btc-2010-chunk-000PART.nq");
+		       		dataset = RDFDataMgr.loadDataset("/home/felagund/Scrivania/BIGDATA PROJECT/RDF/btc-2010-chunk-000/btc-2010-chunk-000.nq");
 			        dataset.begin ( ReadWrite.WRITE );
 
 		            DatasetGraph dsg = dataset.asDatasetGraph();
