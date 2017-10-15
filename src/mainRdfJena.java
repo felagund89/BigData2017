@@ -1,3 +1,6 @@
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -77,9 +80,16 @@ public class mainRdfJena {
 //		    dtModel.createResource(subject).addProperty(pred,dtModel.createResource(resource));
 //		  }
 ////		
-		
+				File resultFile = new File("/home/felagund/Scrivania/BIGDATA PROJECT/resultAnalyses.txt");
+				BufferedWriter outputFile;
+				
 				Dataset dataset=null;
 		       	try {
+		       		outputFile = new BufferedWriter(new FileWriter(resultFile));
+		       		outputFile.append("BigData-hw1-aa2016-2017");
+
+		       		
+		       		
 		       		dataset = RDFDataMgr.loadDataset("/home/felagund/Scrivania/BIGDATA PROJECT/RDF/btc-2010-chunk-000/btc-2010-chunk-000PART.nq");
 			        dataset.begin ( ReadWrite.WRITE );
 
@@ -96,19 +106,59 @@ public class mainRdfJena {
                 
 		            	allTripleOfGraph.addAll(allTripleSubGraph);
 		            	
-		                System.out.println("name nodo "+node.getURI());
+//		                System.out.println("name nodo "+node.getURI());
+		                outputFile.append("Node : "+node.getURI());
 		                
 //		                dsg.add(quad);
 		            }
-		            
-		            for (Triple triple : allTripleOfGraph) {
-		            	System.out.println("SOGGETTO "+ triple.getSubject() + "isblank " +triple.getSubject().isBlank() );
-		            	System.out.println("OGGETTO "+ triple.getObject() + "isblank " + triple.getSubject().isBlank());
-		            	System.out.println("PREDICATO "+ triple.getPredicate()+ " isblank"+ triple.getSubject().isBlank());
+	                outputFile.append("");
 
+		            System.out.println("fine  while ( nodes.hasNext() ) ");
+		            
+		            outputFile.append("RESULT ANALYSES");
+		            outputFile.append("1. Compute the number of distinct nodes and edges in the corresponding RDF graph.");
+		            outputFile.append("  Number of distinct nodes: "+allTripleOfGraph.size());
+		           
+		            
+		            double emptyContext=0;
+	            	double objectBlankNode=0;
+	            	double subjectBlankNode = 0;
+	            	
+	            	outputFile.append("");
+	            	
+		            for (Triple triple : allTripleOfGraph) {
+		            	
+		            	if(triple.getSubject().isBlank())
+		            		subjectBlankNode++;
+		            	if(triple.getObject().isBlank())
+		            		objectBlankNode++;
+		            	
+		            	
+		            	
+//		            	System.out.println("SOGGETTO "+ triple.getSubject() + "isblank " +triple.getSubject().isBlank() );
+//		            	System.out.println("OGGETTO "+ triple.getObject() + "isblank " + triple.getSubject().isBlank());
+//		            	System.out.println("PREDICATO "+ triple.getPredicate()+ " isblank"+ triple.getSubject().isBlank());
+//		            	System.out.println("");
 										
 						
 					}
+		            System.out.println("fine for (Triple) ");
+		            outputFile.append("2. Compute the outdegree distribution: does it follow a power law? Plot the result in a figure.");
+		            outputFile.append("3. Compute the indegree distribution: does it follow a power law? Plot the result in a figure.");
+		            
+		            
+		            outputFile.append("4. Which are the 10 nodes with maximum outdegree, and what are their respective degrees?");
+	            	outputFile.append("");
+
+		            
+		            
+		            outputFile.append("5. Compute the percentage of triples with empty context, the percentage of triples whose subject is a blank node, and the percentage of triples whose object is a blank node.");
+		            outputFile.append("  Percentage Subject blank nodes: " + (double)allTripleOfGraph.size()/subjectBlankNode);
+		            outputFile.append("  Percentage Object blank nodes: " + (double)allTripleOfGraph.size()/objectBlankNode);
+
+		            
+		            
+		            
 		            
 		            dataset.commit();
 		            
@@ -120,23 +170,9 @@ public class mainRdfJena {
 		        }
 //		        RDFDataMgr.write(System.out, dataset, Lang.NQUADS);
 		    
-
-			
-			
-			
-			
-			
-			
-			
+		
 		
 	}
-	
-	
-	
-	
-	
-	
-	
 	
 	
 }
