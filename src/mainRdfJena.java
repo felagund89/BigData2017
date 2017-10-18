@@ -49,13 +49,13 @@ public class mainRdfJena {
 
 				BufferedWriter outputFile = null;
 
-				File resultFile = new File("/home/felagund/Scrivania/BIGDATA PROJECT/resultAnalyses.txt");
+//				File resultFile = new File("/home/felagund/Scrivania/BIGDATA PROJECT/resultAnalyses.txt");
 				
 				Dataset dataset=null;
 		       	try {
 
-		       		outputFile = new BufferedWriter(new FileWriter(resultFile));
-		       		outputFile.append("\nBigData-hw1-aa2016-2017\n");
+//		       		outputFile = new BufferedWriter(new FileWriter(resultFile));
+//		       		outputFile.append("\nBigData-hw1-aa2016-2017\n");
 
 		       		
 		       		
@@ -75,32 +75,44 @@ public class mainRdfJena {
                 
 		            	allTripleOfGraph.addAll(allTripleSubGraph);
 		            	
-//		                System.out.println("name nodo "+node.getURI());
+		                System.out.println("name nodo "+node.getURI());
 //		                outputFile.append("\nNode : "+node.getURI());
 		                
 //		                dsg.add(quad);
 		            }
-	                outputFile.append("\n");
+//	                outputFile.append("\n");
 
 		            System.out.println("fine  while ( nodes.hasNext() ) ");
 		            
-		            outputFile.append("\nRESULT ANALYSES\n");
-		            outputFile.append("\n1. Compute the number of distinct nodes and edges in the corresponding RDF graph.");
-		            outputFile.append("\n  Number of distinct nodes: "+allTripleOfGraph.size());
+//		            outputFile.append("\nRESULT ANALYSES\n");
+//		            outputFile.append("\n1. Compute the number of distinct nodes and edges in the corresponding RDF graph.");
+//		            outputFile.append("\n  Number of distinct nodes: "+allTripleOfGraph.size());
 		           
 		            
 		            double emptyContext=0;
 	            	double objectBlankNode=0;
 	            	double subjectBlankNode = 0;
 	            	
+	            	
+	            	int objects=0;
+	            	int subjects=0;
+	            	int predicates=0;
 	            	outputFile.append("");
 	            	
 		            for (Triple triple : allTripleOfGraph) {
 		            	
 		            	if(triple.getSubject().isBlank())
 		            		subjectBlankNode++;
+		            	else
+		            		subjects++; //conto i soggetti
+		            	
 		            	if(triple.getObject().isBlank())
 		            		objectBlankNode++;
+		            	else
+		            		objects++; //conto gli oggetti (indegree ??? )
+		            	
+		            	if(!triple.getPredicate().isBlank())
+		            		predicates++; //conto i predicati (outdegree ???)
 		            	
 		            	
 		            	
@@ -112,36 +124,40 @@ public class mainRdfJena {
 						
 					}
 		            System.out.println("\nfine for (Triple) ");
-		            outputFile.append("\n2. Compute the outdegree distribution: does it follow a power law? Plot the result in a figure.");
-		            outputFile.append("\n3. Compute the indegree distribution: does it follow a power law? Plot the result in a figure.");
+//		            outputFile.append("\n2. Compute the outdegree distribution: does it follow a power law? Plot the result in a figure.");
+		            System.out.println("\n2. Compute the outdegree distribution: does it follow a power law? Plot the result in a figure.");
+		            System.out.println("-outdegree count: "+predicates);
 		            
 		            
-		            outputFile.append("\n4. Which are the 10 nodes with maximum outdegree, and what are their respective degrees?");
-	            	outputFile.append("\n");
+//		            outputFile.append("\n3. Compute the indegree distribution: does it follow a power law? Plot the result in a figure.");
+//		            
+//		            
+//		            outputFile.append("\n4. Which are the 10 nodes with maximum outdegree, and what are their respective degrees?");
+//	            	outputFile.append("\n");
 
 		            
 		            
-		            outputFile.append("\n5. Compute the percentage of triples with empty context, the percentage of triples whose subject is a blank node, and the percentage of triples whose object is a blank node.");
+//		            outputFile.append("\n5. Compute the percentage of triples with empty context, the percentage of triples whose subject is a blank node, and the percentage of triples whose object is a blank node.");
 		            
 		            double mediaSubjectblank = (double)allTripleOfGraph.size()/subjectBlankNode;
 		            double mediaObjectblank = (double)allTripleOfGraph.size()/objectBlankNode;
-
-		            outputFile.append("\n  Percentage Subject blank nodes: " + df.format(mediaSubjectblank)+"%");
-		            outputFile.append("\n  Percentage Object blank nodes: " + df.format(mediaObjectblank)+"%");
+		            System.out.println(mediaSubjectblank +" "+mediaObjectblank );
+//		            outputFile.append("\n  Percentage Subject blank nodes: " + df.format(mediaSubjectblank)+"%");
+//		            outputFile.append("\n  Percentage Object blank nodes: " + df.format(mediaObjectblank)+"%");
 
  
 		            System.out.println("fine");
 		            
 		            dataset.commit();
-		            outputFile.close();
+//		            outputFile.close();
 		            
 		        } catch ( Exception e ) {
 		            e.printStackTrace(System.err);
 		            dataset.abort();
-		            outputFile.close();
+//		            outputFile.close();
 		        } finally {
 		            dataset.end();
-		            outputFile.close();
+//		            outputFile.close();
 		        }
 //		        RDFDataMgr.write(System.out, dataset, Lang.NQUADS);
 
