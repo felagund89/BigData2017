@@ -1,6 +1,7 @@
 
-package org.apache.jena.hadoop.rdf.mapreduce.count;
+package main.java.old;
 
+import org.apache.jena.hadoop.rdf.mapreduce.count.AbstractNodeTupleNodeCountMapper;
 import org.apache.jena.hadoop.rdf.types.NodeWritable;
 import org.apache.jena.hadoop.rdf.types.TripleWritable;
 import org.apache.jena.graph.Triple;

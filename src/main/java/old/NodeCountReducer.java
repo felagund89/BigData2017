@@ -1,4 +1,4 @@
-package org.apache.jena.hadoop.rdf.mapreduce.count;
+package main.java.old;
 
 import java.io.IOException;
 import java.util.Iterator;

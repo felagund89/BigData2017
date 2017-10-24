@@ -1,8 +1,11 @@
+package main.java;
 
 import java.io.IOException;
 import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.List;
+
+import main.java.bean.BasicTuple;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
@@ -103,7 +106,6 @@ public class BigData2017 {
 		@Override
 		protected void cleanup(Context context) throws IOException,
 				InterruptedException {
-			// TODO Auto-generated method stub
 			super.cleanup(context);
 		}
 
@@ -111,9 +113,28 @@ public class BigData2017 {
 		protected void map(LongWritable key, Text value, Context context)
 				throws IOException, InterruptedException {
 			Scanner scanner = new Scanner(value.toString());
+//			scanner.useDelimiter("> .\\n<|> .\\n_|\\ .\\n_|\\ .\\n<");
+
+			List<BasicTuple> listBasicTuples = new ArrayList<BasicTuple>();
 			scanner.useDelimiter("> .\\n<|> .\\n_|\\ .\\n_|\\ .\\n<");
 			while (scanner.hasNext()) {
 				word.set(scanner.next());
+				//prendo la riga intera, cerco di splittarla in qualche modo per creare un oggetto BasicTuple
+				BasicTuple bTuple = new BasicTuple();
+				String tuple = word.toString();
+				
+				//vanno distinti i vari  casi 4 oggetti nella riga, oppure blank node per soggetto e oggetto
+				String [] splittedTuple = tuple.split(" "); //non va bene solo lo spazio, se ci sono stringhe con spazio infatti non va.
+				//una buona idea potrebbe essere quella di fare il trim della stringa, ma poi si perde evidenza di quando finisce o inizia oggetto, soggetto, predicato.
+				
+				//setto le componenti nell'oggetto basicTuple dopo che ho splittato
+				bTuple.setSubject("splittedTuple[0]");
+				bTuple.setObject("");
+				bTuple.setPredicate("");
+				
+				
+				
+				listBasicTuples.add(bTuple);
 				context.write(word, one);
 			}
 

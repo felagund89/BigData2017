@@ -1,6 +1,8 @@
-package org.apache.jena.hadoop.rdf.mapreduce.count;
+package main.java.old;
 
 import java.io.File;
+
+import main.java.old.NodeCountReducer;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
@@ -10,7 +12,6 @@ import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.jena.hadoop.rdf.io.input.nquads.NQuadsInputFormat;
 import org.apache.jena.hadoop.rdf.io.output.ntriples.NTriplesNodeOutputFormat;
-import org.apache.jena.hadoop.rdf.mapreduce.count.NodeCountReducer;
 import org.apache.jena.hadoop.rdf.types.NodeWritable;
 
 import com.google.common.io.Files;
