@@ -32,7 +32,7 @@ import org.apache.jena.base.Sys;
  */
 
 
-public class BigData2017 {
+public class BigData2017Eclipse {
 
 	static int printUsage() {
 		System.out.println("wordcount [-m <maps>] [-r <reduces>] <input> <output>");
@@ -101,7 +101,7 @@ public class BigData2017 {
 		    job.setOutputKeyClass(Text.class);
 		    job.setOutputValueClass(IntWritable.class);
 			//System.out.println("111" );
-	
+		    
 
 		    job.waitForCompletion(true);
 		    System.out.println("num reduce task: "+job.getNumReduceTasks());

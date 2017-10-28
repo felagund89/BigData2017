@@ -26,7 +26,6 @@ import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.sparql.core.DatasetGraph;
 import org.apache.jena.sparql.core.Quad;
-import org.apache.jena.sparql.core.mem.DatasetGraphInMemory;
 import org.apache.jena.tdb.TDBFactory;
 import org.apache.jena.tdb.base.file.Location;
 import org.apache.jena.tdb.store.TripleTable;
@@ -72,9 +71,9 @@ public class mainRdfJena {
 		            while ( nodes.hasNext() ) {
 		                Node node = nodes.next();
 
-		            	List<Triple> allTripleSubGraph = dsg.getGraph(node).find().toList();
-                
-		            	allTripleOfGraph.addAll(allTripleSubGraph);
+//		            	List<Triple> allTripleSubGraph = dsg.getGraph(node).find().toList();
+//                
+//		            	allTripleOfGraph.addAll(allTripleSubGraph);
 		            	
 		                System.out.println("name nodo "+node.getURI());
 //		                outputFile.append("\nNode : "+node.getURI());
