@@ -2,13 +2,13 @@ package main.java;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
@@ -19,8 +19,8 @@ import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
-import org.apache.jena.base.Sys;
 
 
 
@@ -32,7 +32,7 @@ import org.apache.jena.base.Sys;
  */
 
 
-public class BigData2017Eclipse {
+public class BigData2017Eclipse extends Configured implements Tool{
 
 	static int printUsage() {
 		System.out.println("wordcount [-m <maps>] [-r <reduces>] <input> <output>");
@@ -43,74 +43,59 @@ public class BigData2017Eclipse {
 
 	public static void main(String[] args) throws Exception {
 		
-		List<String> otherArgs = new ArrayList<String>();
-
-		Configuration conf = new Configuration();
-		
-		
 		try{
-			
-			conf.setInt("mapreduce.job.maps", 4);
-			conf.setInt("mapreduce.job.reduces", 2);
-	
-			
-	//		for(int i=0; i < args.length; ++i) {
-	//			try {
-	//				if ("-m".equals(args[i])) {
-	//					conf.setInt("mapreduce.job.maps", Integer.parseInt(args[++i]));
-	//				} else if ("-r".equals(args[i])) {
-	//					conf.setInt("mapreduce.job.reduces", Integer.parseInt(args[++i]));
-	//				} else {
-	//					otherArgs.add(args[i]);
-	//				}
-	//			} catch (NumberFormatException except) {
-	//				System.out.println("ERROR: Integer expected instead of " + args[i]);
-	//				System.exit(printUsage());
-	//			} catch (ArrayIndexOutOfBoundsException except) {
-	//				System.out.println("ERROR: Required parameter missing from " +
-	//						args[i-1]);
-	//				System.exit(printUsage());
-	//			}
-	//		}
-	//		// Make sure there are exactly 2 parameters left.
-	//		if (otherArgs.size() != 2) {
-	//			System.out.println("ERROR: Wrong number of parameters: " +
-	//					otherArgs.size() + " instead of 2.");
-	//			System.exit(printUsage());
-	//		}
-			Path input = new Path("/home/felagund/Scrivania/BIGDATA PROJECT/RDF/prova");
-	//		Path input = new Path("/home/biar/Desktop/wordcountNew/rdfFiles/prova.txt");
-			Path output =new Path("/home/felagund/Scrivania/BIGDATA PROJECT/RDF/out");
-			Job job = Job.getInstance(conf);
-	        job.setJarByClass(BigData2017.class);
-	        job.setJobName("BigData2017");
-
-		    FileInputFormat.addInputPath(job, input);
-		    FileOutputFormat.setOutputPath(job, output);
-	
-		    job.setMapperClass(MyMapper.class);
-		    //job.setCombinerClass(BigData2017$MyReducer.class);
-		    job.setReducerClass(MyReducer.class);
-	
-	        // An InputFormat for plain text files. 
-	        // Files are broken into lines. Either linefeed or carriage-return are used 
-	        // to signal end of line. Keys are the position in the file, and values 
-	        // are the line of text.
-		    job.setInputFormatClass(TextInputFormat.class);
-	
-		    job.setOutputKeyClass(Text.class);
-		    job.setOutputValueClass(IntWritable.class);
-			//System.out.println("111" );
-		    
-
-		    job.waitForCompletion(true);
-		    System.out.println("num reduce task: "+job.getNumReduceTasks());
-			System.out.println("reduce progress: "+ job.reduceProgress());
-			System.out.println("job status: "+ job.getStatus().toString());		    
+		
+		 BigData2017Eclipse eclipseRunning = new BigData2017Eclipse();
+		 int exitCode = ToolRunner.run(eclipseRunning, args);
+		 System.exit(exitCode);
 		}catch(Exception e){
-			
 			e.printStackTrace();
 		}
+		
+//
+//		Configuration conf = new Configuration();
+//		
+//		
+//		try{
+//			
+//			conf.setInt("mapreduce.job.maps", 4);
+//			conf.setInt("mapreduce.job.reduces", 2);
+//	
+//			
+//	
+//			Path input = new Path("/home/felagund/Scrivania/BIGDATA PROJECT/RDF/prova");
+//	//		Path input = new Path("/home/biar/Desktop/wordcountNew/rdfFiles/prova.txt");
+//			Path output =new Path("/home/felagund/Scrivania/BIGDATA PROJECT/RDF/out");
+//			Job job = Job.getInstance(conf);
+//	        job.setJarByClass(BigData2017Eclipse.class);
+//	        job.setJobName("BigData2017");
+//
+//		    FileInputFormat.addInputPath(job, input);
+//		    FileOutputFormat.setOutputPath(job, output);
+//	
+//		    job.setMapperClass(MyMapper.class);
+//		    //job.setCombinerClass(BigData2017$MyReducer.class);
+//		    job.setReducerClass(MyReducer.class);
+//	
+//	        // An InputFormat for plain text files. 
+//	        // Files are broken into lines. Either linefeed or carriage-return are used 
+//	        // to signal end of line. Keys are the position in the file, and values 
+//	        // are the line of text.
+//		    job.setInputFormatClass(TextInputFormat.class);
+//	
+//		    job.setOutputKeyClass(Text.class);
+//		    job.setOutputValueClass(IntWritable.class);
+//			//System.out.println("111" );
+//		    
+//
+//		    job.waitForCompletion(true);
+//		    System.out.println("num reduce task: "+job.getNumReduceTasks());
+//			System.out.println("reduce progress: "+ job.reduceProgress());
+//			System.out.println("job status: "+ job.getStatus().toString());		    
+//		}catch(Exception e){
+//			
+//			e.printStackTrace();
+//		}
 
 	}
 	
@@ -351,7 +336,6 @@ public class BigData2017Eclipse {
 	}
 	
 	
-	
 	public static class BasicTuple implements Serializable{
 
 		/**
@@ -408,6 +392,54 @@ public class BigData2017Eclipse {
 		public void setgraphLabel(String graphLabel) {
 			this.graphLabel = graphLabel;
 		}
+		
+	}
+
+
+
+	@Override
+	public int run(String[] arg0) throws Exception {
+		
+
+		Configuration conf = new Configuration();
+		
+			conf.setInt("mapreduce.job.maps", 4);
+			conf.setInt("mapreduce.job.reduces", 2);
+	
+			
+	
+			Path input = new Path("/home/felagund/Scrivania/BIGDATA PROJECT/RDF/prova");
+//			Path output =new Path("/home/felagund/Scrivania/BIGDATA PROJECT/RDF/out");
+//			Path output =new Path("/home/felagund/Scrivania/BIGDATA PROJECT/RDF/out");
+			Job job = Job.getInstance(conf);
+	        job.setJarByClass(BigData2017Eclipse.class);
+	        job.setJobName("BigData2017Eclipse");
+
+		    FileInputFormat.addInputPath(job, input);
+		    FileOutputFormat.setOutputPath(job,new Path(arg0[0]));
+	
+		    job.setMapperClass(MyMapper.class);
+		    //job.setCombinerClass(BigData2017$MyReducer.class);
+		    job.setReducerClass(MyReducer.class);
+	
+	      
+		    job.setInputFormatClass(TextInputFormat.class);
+	
+		    job.setOutputKeyClass(Text.class);
+		    job.setOutputValueClass(IntWritable.class);
+		    
+
+		    
+		    System.exit(job.waitForCompletion(true) ? 0:1); 
+		    boolean success = job.waitForCompletion(true);
+		   
+		    
+		    System.out.println("num reduce task: "+job.getNumReduceTasks());
+			System.out.println("reduce progress: "+ job.reduceProgress());
+			System.out.println("job status: "+ job.getStatus().toString());	
+		    
+		    return success ? 0 : 1;
+
 		
 	}
 

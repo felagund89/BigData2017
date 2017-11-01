@@ -1,5 +1,3 @@
-
-
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.URLDecoder;
@@ -47,8 +45,6 @@ public class BigData2017 {
 		
 		
 		try{
-			
-
 			for(int i=0; i < args.length; ++i) {
 				try {
 					if ("-m".equals(args[i])) {
@@ -79,7 +75,7 @@ public class BigData2017 {
 
 			Job job = Job.getInstance(conf);
 	        job.setJarByClass(BigData2017.class);
-	        job.setJobName("BigData2017");
+	        job.setJobName("Analyses1-2-4-6");
 
 		    FileInputFormat.addInputPath(job, input);
 		    FileOutputFormat.setOutputPath(job, output);
@@ -88,15 +84,11 @@ public class BigData2017 {
 		    //job.setCombinerClass(BigData2017$MyReducer.class);
 		    job.setReducerClass(MyReducer.class);
 	
-	        // An InputFormat for plain text files. 
-	        // Files are broken into lines. Either linefeed or carriage-return are used 
-	        // to signal end of line. Keys are the position in the file, and values 
-	        // are the line of text.
+	        
 		    job.setInputFormatClass(TextInputFormat.class);
 	
 		    job.setOutputKeyClass(Text.class);
 		    job.setOutputValueClass(IntWritable.class);
-			//System.out.println("111" );
 	
 
 		    job.waitForCompletion(true);
@@ -158,10 +150,8 @@ public class BigData2017 {
 				
 				if(splittedTuple[0].equals("")){   //se splittedTuple[0] è vuoto significa che il soggetto è il successivo 			
 					
-					
-						subject = splittedTuple[1].substring(0, splittedTuple[1].length()-2);
-					
-					
+					subject = splittedTuple[1].substring(0, splittedTuple[1].length()-2);
+									
 					predicate = splittedTuple[2];
 					String [] splitPredicate = predicate.split(">");
 					
@@ -172,8 +162,7 @@ public class BigData2017 {
 						Boolean checkDoubleQuote = object.contains("\"");
 						if(checkDoubleQuote){
 							object= object.substring(object.indexOf("\"")+1, object.lastIndexOf("\""));
-						}
-						else{
+						}else{
 							String objectTemp= object.replace("x", "%");
 							objectTemp = objectTemp.substring(objectTemp.indexOf("%%")+2);
 							objectTemp = URLDecoder.decode(objectTemp, "UTF-8");
@@ -188,16 +177,11 @@ public class BigData2017 {
 							}
 	
 						}
-					}
-					else{
+					}else{
 						object = splittedTuple[3].substring(0,splittedTuple[3].indexOf(">"));
 					}
 
-					
-					
-
-				}
-				else{ // soggetto=blank node , decodifico per sapere quale è 
+				}else{ // soggetto=blank node , decodifico per sapere quale è 
 					
 					String a = splittedTuple[0].replace("x", "%");
 					a = a.substring(a.indexOf("%%")+2);
@@ -206,8 +190,7 @@ public class BigData2017 {
 					
 					if(checkPred){
 						subject=a.substring(a.lastIndexOf("DESCRIBE")+12, a.length()-4);
-					}
-					else{
+					}else{
 						subject = a;
 					}
 					//System.out.println("tuple " +tuple);
@@ -226,8 +209,7 @@ public class BigData2017 {
 						Boolean checkDoubleQuote2 = object.contains("\"");
 						if(checkDoubleQuote2){
 							object= object.substring(object.indexOf("\"")+1, object.lastIndexOf("\""));
-						}
-						else{
+						}else{
 							String objectTemp2= object.replace("x", "%");
 							objectTemp2 = objectTemp2.substring(objectTemp2.indexOf("%%")+2);
 							objectTemp2 = URLDecoder.decode(objectTemp2, "UTF-8");
@@ -236,8 +218,7 @@ public class BigData2017 {
 							
 							if(checkObjectDescribe2){
 								object=objectTemp2.substring(objectTemp2.lastIndexOf("DESCRIBE")+12, objectTemp2.length()-4);
-							}
-							else{
+							}else{
 								object = objectTemp2;
 							}
 							
@@ -262,14 +243,9 @@ public class BigData2017 {
 				
 				if(checkgraphLabel){
 					graphLabel=splittedTuple[lastindex].substring(splittedTuple[lastindex].lastIndexOf("DESCRIBE")+10, splittedTuple[lastindex].length()-4);
-				}
-				else{
+				}else{
 					graphLabel = splittedTuple[lastindex].substring(0, splittedTuple[lastindex].length()-3);
 				}
-
-					
-
-
 
 				//setto le componenti nell'oggetto basicTuple dopo che ho splittato
 				bTuple.setSubject(subject);
