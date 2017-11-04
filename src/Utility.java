@@ -32,7 +32,7 @@ public class Utility {
 		Node[] linenode = parsedLine.next();
 		for(int i=0;i<linenode.length;i++){
 			String splittedStr = linenode[i].toString();
-			System.out.println(linenode[i].toString());
+//			System.out.println(linenode[i].toString());
 			if(splittedStr.startsWith("_:")){
 				//caso blankNode
 				hashNodes.put(lineKeys.get(i),"blankNode");
