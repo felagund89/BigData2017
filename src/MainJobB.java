@@ -1,4 +1,6 @@
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Scanner;
 
 import org.apache.hadoop.conf.Configuration;
@@ -9,41 +11,47 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
+import org.apache.hadoop.mapreduce.Reducer.Context;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 
+
+
 //
 public class MainJobB {
-
+	public static HashSet<String> hashSetNodes = new HashSet<String>(); 
+	public static HashSet<String> hashSetEdges = new HashSet<String>(); 
+	public static HashMap<String, Integer> mapIndegree = new HashMap<>();
 	
+	public static int count=0;
 	
 	public static void main(String[] args) {
 
 	}
 
 	
-	public static void runJobB(Configuration conf, Path input, Path output) {
-
+	public static void runJobA(Configuration conf, Path input, Path output) {
+			
 		Job job;
 		try {
+			
+			
 			job = Job.getInstance(conf);
 
 			job.setJarByClass(BigData2017.class);
 			job.setJobName("JobB");
-
 			FileInputFormat.addInputPath(job, input);
 			FileOutputFormat.setOutputPath(job, output);
 
-			job.setMapperClass(MyMapper.class);
-			// job.setCombinerClass(BigData2017$MyReducer.class);
-			job.setReducerClass(MyReducer.class);
+			job.setMapperClass(MyMapperB.class);
+			job.setReducerClass(MyReducerB.class);
 
 			job.setInputFormatClass(TextInputFormat.class);
 
 			job.setOutputKeyClass(Text.class);
-			job.setOutputValueClass(IntWritable.class);
+			job.setOutputValueClass(Text.class);
 
 			job.waitForCompletion(true);
 			System.out.println("num reduce task: " + job.getNumReduceTasks());
@@ -56,9 +64,8 @@ public class MainJobB {
 		}
 	}
 
-	public static class MyMapper extends
-			Mapper<LongWritable, Text, Text, IntWritable> {
-		private final static IntWritable one = new IntWritable(1);
+	public static class MyMapperB extends
+			Mapper<LongWritable, Text, Text, Text> {
 		private Text word = new Text();
 
 		@Override
@@ -71,26 +78,52 @@ public class MainJobB {
 		protected void map(LongWritable key, Text value, Context context)
 				throws IOException, InterruptedException {
 
-			Scanner scanner = new Scanner(value.toString());
+			try{
+				Scanner scanner = new Scanner(value.toString());
+	
+				scanner.useDelimiter("> .\\n<|> .\\n_|\\ .\\n_|\\ .\\n<");
+				Text node1 = new Text("node1");
+				Text edge = new Text("edge");
+				Text indegree = new Text("1");
+	
+				while (scanner.hasNext()) {
+	
+					word.set(scanner.next());
+					String tuple = word.toString();
+					
+					//
+					HashMap<String,String> hashNode = Utility.splitTuple(tuple);
+//					System.out.println("dopo nxparser..");
+					count++;
+					System.out.println("count: "+count);
 
-			scanner.useDelimiter("> .\\n<|> .\\n_|\\ .\\n_|\\ .\\n<");
-			while (scanner.hasNext()) {
+					Text subject = new Text(hashNode.get("subject"));
+//					System.out.println(subject.toString());
 
-				String subject;
-				String predicate;
-				String object = "";
+					Text object = new Text(hashNode.get("object"));
+//					System.out.println(object.toString());
 
-				word.set(scanner.next());
+					Text predicate = new Text(hashNode.get("predicate"));
+//					System.out.println(predicate.toString());
+//					System.out.println("------------------");
 
-				String tuple = word.toString();
+					
+//					Text cont = new Text(hashNode.get("context"));
+//					System.out.println(cont.toString());
+	
+					context.write(node1, subject);
+					context.write(node1, object);
+					
+					
 
-				// subject = splitTupleOld(tuple);
+					context.write(edge, predicate);
+					context.write(object, indegree);
+					
+//					System.out.println(subject.toString() +" " +object.toString()+" " + predicate.toString()+" "+ cont.toString());
 
-				Utility.splitTuple(tuple);
-
-				Text text1 = new Text(tuple);
-				context.write(text1, one);
-
+				}
+			}catch(Exception e){
+				e.printStackTrace();
 			}
 
 		}
@@ -109,8 +142,7 @@ public class MainJobB {
 
 	}
 
-	public static class MyReducer extends
-			Reducer<Text, IntWritable, Text, IntWritable> {
+	public static class MyReducerB extends Reducer<Text, Text, Text, IntWritable> {
 
 		@Override
 		protected void cleanup(Context context) throws IOException,
@@ -120,18 +152,47 @@ public class MainJobB {
 			super.cleanup(context);
 		}
 
+		
 		@Override
-		protected void reduce(Text key, Iterable<IntWritable> values,
-				Context context) throws IOException, InterruptedException {
-			System.out.println("REDUCE:");
-			int sum = 0;
-			for (IntWritable value : values) {
-				System.out.println("value: " + value.get());
-				System.out.println("key: " + key);
-				sum += value.get();
-			}
+		protected void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
+			
+			System.out.println("REDUCE: ");
+			
+			
 
-			context.write(key, new IntWritable(sum));
+			for (Text value : values) {
+				
+				String currentVal = value.toString();
+
+				if(key.toString().equalsIgnoreCase("node1")){
+					hashSetNodes.add(currentVal);				
+					context.write(new Text("nodes"), new IntWritable(hashSetNodes.size()));
+
+				}
+				else if(key.toString().equalsIgnoreCase("edge")){
+					hashSetEdges.add(currentVal);				
+					context.write(new Text("edges"), new IntWritable(hashSetEdges.size()));
+
+				}
+				else{
+					Integer countMap = mapIndegree.get(key.toString());
+					if ( countMap == null){
+						mapIndegree.put(key.toString(), 1);
+						context.write(key, new IntWritable(1));
+
+					}
+					else{
+						mapIndegree.put(key.toString(), countMap+1);
+						context.write(key, new IntWritable(countMap+1));
+
+					}
+					
+				}
+			
+			}
+			
+
+			
 		}
 
 		@Override
@@ -149,6 +210,5 @@ public class MainJobB {
 			super.setup(context);
 		}
 	}
-	
-	
+
 }
