@@ -15,6 +15,15 @@ import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
+
+
+
+
+/**
+ * @author biar
+ *	1.Compute the number of distinct nodes and edges in the corresponding RDF graph;
+ *	3.Compute the indegree distribution.
+ */
 public class MainJobA {
 
 	public static HashSet<String> hashSetNodes = new HashSet<String>(); 

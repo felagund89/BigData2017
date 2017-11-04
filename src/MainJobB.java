@@ -19,8 +19,11 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 
 
-//
-public class MainJobB {
+/**
+ * @author biar
+ *	2.Compute the outdegree distribution;
+ *  4.Report the 10 nodes with maximum outdegree with their respective degrees.
+ */public class MainJobB {
 	
 	public static Map<String, Integer> mapOutDegree = new HashMap<String,Integer>();
 	public static HashMap<String,Integer> firstTenOutdegree = new LinkedHashMap<String,Integer>();

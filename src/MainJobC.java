@@ -17,6 +17,12 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 
 
+
+/**
+ * @author biar
+ * 5.Compute the percentage of triples with empty context, the percentage of triples whose
+ * subject is a blank node, and the percentage of triples whose object is a blank node.
+ */
 public class MainJobC {
 
 	
