@@ -86,7 +86,7 @@ public class MainJobB {
 
 				// subject = splitTupleOld(tuple);
 
-				Utility.splitNew(tuple);
+				Utility.splitTuple(tuple);
 
 				Text text1 = new Text(tuple);
 				context.write(text1, one);

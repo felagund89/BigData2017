@@ -21,20 +21,28 @@ public class Utility {
 	
 	
 	//return mappa
-	public static HashMap<String, String> splitNew(String tuple) {
+	public static HashMap<String, String> splitTuple(String tuple) {
 		
 		initKeys();
 		
-		HashMap<String, String> result = new HashMap<>();
+		HashMap<String, String> hashNodes = new HashMap<>();
 		NxParser nxp = new NxParser();
 		Iterator<Node[]> parsedLine = nxp.parse(new ByteArrayInputStream(tuple.getBytes(StandardCharsets.UTF_8)));
 		
 		Node[] linenode = parsedLine.next();
 		for(int i=0;i<linenode.length;i++){
+			String splittedStr = linenode[i].toString();
 			System.out.println(linenode[i].toString());
+			if(splittedStr.startsWith("_:")){
+				//caso blankNode
+				hashNodes.put(lineKeys.get(i),"blankNode");
+
+			}else{
+				hashNodes.put(lineKeys.get(i), linenode[i].toString());
+			}
 		}
 		
-		return result;
+		return hashNodes;
 	}
 
 	

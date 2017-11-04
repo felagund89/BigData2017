@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Scanner;
 
 import org.apache.hadoop.conf.Configuration;
@@ -72,8 +73,12 @@ public class MainJobA {
 
 				word.set(scanner.next());
 				String tuple = word.toString();
-				Utility.splitNew(tuple);
+				
+				//
+				HashMap<String,String> hashNode = Utility.splitTuple(tuple);
+				
 				Text text1 = new Text(tuple);
+				
 				context.write(text1, one);
 
 			}
