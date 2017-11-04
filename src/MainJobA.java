@@ -19,6 +19,8 @@ public class MainJobA {
 
 	public static HashSet<String> hashSetNodes = new HashSet<String>(); 
 	public static HashSet<String> hashSetEdges = new HashSet<String>(); 
+	public static HashMap<String, Integer> mapIndegree = new HashMap<>();
+	
 	public static int count=0;
 	
 	public static void main(String[] args) {
@@ -76,7 +78,7 @@ public class MainJobA {
 				Scanner scanner = new Scanner(value.toString());
 	
 				scanner.useDelimiter("> .\\n<|> .\\n_|\\ .\\n_|\\ .\\n<");
-				Text node = new Text("node");
+				Text node1 = new Text("node1");
 				Text edge = new Text("edge");
 				Text indegree = new Text("1");
 	
@@ -105,8 +107,11 @@ public class MainJobA {
 //					Text cont = new Text(hashNode.get("context"));
 //					System.out.println(cont.toString());
 	
-					context.write(node, subject);
-					context.write(node, object);
+					context.write(node1, subject);
+					context.write(node1, object);
+					
+					
+
 					context.write(edge, predicate);
 					context.write(object, indegree);
 					
@@ -147,7 +152,7 @@ public class MainJobA {
 		@Override
 		protected void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
 			
-			System.out.println("REDUCE:");
+			System.out.println("REDUCE: ");
 			
 			
 
@@ -155,15 +160,29 @@ public class MainJobA {
 				
 				String currentVal = value.toString();
 
-				if(key.toString().equalsIgnoreCase("node")){
-					hashSetNodes.add(currentVal);	
+				if(key.toString().equalsIgnoreCase("node1")){
+					hashSetNodes.add(currentVal);				
 					context.write(new Text("nodes"), new IntWritable(hashSetNodes.size()));
-					
+
 				}
-				if(key.toString().equalsIgnoreCase("edge")){
+				else if(key.toString().equalsIgnoreCase("edge")){
 					hashSetEdges.add(currentVal);				
 					context.write(new Text("edges"), new IntWritable(hashSetEdges.size()));
 
+				}
+				else{
+					Integer countMap = mapIndegree.get(key.toString());
+					if ( countMap == null){
+						mapIndegree.put(key.toString(), 1);
+						context.write(key, new IntWritable(1));
+
+					}
+					else{
+						mapIndegree.put(key.toString(), countMap+1);
+						context.write(key, new IntWritable(countMap+1));
+
+					}
+					
 				}
 			
 			}
