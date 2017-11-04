@@ -1,6 +1,9 @@
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Scanner;
 
 import org.apache.hadoop.conf.Configuration;
@@ -11,7 +14,6 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
-import org.apache.hadoop.mapreduce.Reducer.Context;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
@@ -21,9 +23,10 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 //
 public class MainJobB {
-	public static HashSet<String> hashSetNodes = new HashSet<String>(); 
-	public static HashSet<String> hashSetEdges = new HashSet<String>(); 
-	public static HashMap<String, Integer> mapIndegree = new HashMap<>();
+	
+	public static Map<String, Integer> mapOutDegree = new HashMap<String,Integer>();
+	public static HashMap<String,Integer> firstTenOutdegree = new LinkedHashMap<String,Integer>();
+	
 	
 	public static int count=0;
 	
@@ -32,7 +35,7 @@ public class MainJobB {
 	}
 
 	
-	public static void runJobA(Configuration conf, Path input, Path output) {
+	public static void runJobB(Configuration conf, Path input, Path output) {
 			
 		Job job;
 		try {
@@ -82,45 +85,17 @@ public class MainJobB {
 				Scanner scanner = new Scanner(value.toString());
 	
 				scanner.useDelimiter("> .\\n<|> .\\n_|\\ .\\n_|\\ .\\n<");
-				Text node1 = new Text("node1");
-				Text edge = new Text("edge");
-				Text indegree = new Text("1");
-	
+				Text outdegree = new Text("1");
 				while (scanner.hasNext()) {
 	
 					word.set(scanner.next());
 					String tuple = word.toString();
-					
-					//
 					HashMap<String,String> hashNode = Utility.splitTuple(tuple);
-//					System.out.println("dopo nxparser..");
 					count++;
-					System.out.println("count: "+count);
-
+//					System.out.println("count outdree: "+count);
 					Text subject = new Text(hashNode.get("subject"));
-//					System.out.println(subject.toString());
-
-					Text object = new Text(hashNode.get("object"));
-//					System.out.println(object.toString());
-
-					Text predicate = new Text(hashNode.get("predicate"));
-//					System.out.println(predicate.toString());
-//					System.out.println("------------------");
-
+					context.write(subject, outdegree);
 					
-//					Text cont = new Text(hashNode.get("context"));
-//					System.out.println(cont.toString());
-	
-					context.write(node1, subject);
-					context.write(node1, object);
-					
-					
-
-					context.write(edge, predicate);
-					context.write(object, indegree);
-					
-//					System.out.println(subject.toString() +" " +object.toString()+" " + predicate.toString()+" "+ cont.toString());
-
 				}
 			}catch(Exception e){
 				e.printStackTrace();
@@ -159,40 +134,37 @@ public class MainJobB {
 			System.out.println("REDUCE: ");
 			
 			
-
 			for (Text value : values) {
 				
-				String currentVal = value.toString();
+//				String currentValue = value.toString(); 
+				Integer countMap = mapOutDegree.get(key.toString());
+				if ( countMap == null){
+					mapOutDegree.put(key.toString(), 1);
+//					context.write(key, new IntWritable(1));
 
-				if(key.toString().equalsIgnoreCase("node1")){
-					hashSetNodes.add(currentVal);				
-					context.write(new Text("nodes"), new IntWritable(hashSetNodes.size()));
+				}else{
+					mapOutDegree.put(key.toString(), countMap+1);
 
-				}
-				else if(key.toString().equalsIgnoreCase("edge")){
-					hashSetEdges.add(currentVal);				
-					context.write(new Text("edges"), new IntWritable(hashSetEdges.size()));
-
-				}
-				else{
-					Integer countMap = mapIndegree.get(key.toString());
-					if ( countMap == null){
-						mapIndegree.put(key.toString(), 1);
-						context.write(key, new IntWritable(1));
-
-					}
-					else{
-						mapIndegree.put(key.toString(), countMap+1);
-						context.write(key, new IntWritable(countMap+1));
-
-					}
+//					context.write(key, new IntWritable(countMap+1));
 					
 				}
-			
-			}
-			
+				
+				
+				int i = 0;
+				mapOutDegree = Utility.sortByValue(mapOutDegree);
+				context.write(new Text("MAPPA PRIMI 10 outdegree attuali"), new IntWritable(count++));
 
-			
+				for (String keyText : mapOutDegree.keySet()) {
+					if(i<10){
+						context.write(new Text(keyText) ,new IntWritable(mapOutDegree.get(keyText)));
+						i++;			
+					}else{
+						break;
+					}
+				}
+
+			}
+	
 		}
 
 		@Override

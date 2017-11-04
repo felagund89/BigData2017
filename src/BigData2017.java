@@ -80,8 +80,9 @@ public class BigData2017 {
 			Path output = new Path(otherArgs.get(1));
 
 			
-			MainJobA.runJobA(conf, input, output);
-			
+//			MainJobA.runJobA(conf, input, output);
+			MainJobB.runJobB(conf, input, output);
+
 			
 		} catch (Exception e) {
 
