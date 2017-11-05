@@ -28,6 +28,10 @@ public class MainJobC {
 	
 	
 	public static float countEmpty=0;
+	public static float countEmptySubject=0;
+	public static float countEmptyObject=0;
+	public static float countEmptyContext=0;
+
 	public static float totNumOfTriples=0;
 
 	
@@ -99,12 +103,21 @@ public class MainJobC {
 					Text contxt = new Text(hashNode.get("context"));
 					
 
-					if(subject.toString().equalsIgnoreCase("blankNode"))
+					if(subject.toString().equalsIgnoreCase("blankNode")){
 						context.write(new Text("empty subject"), new FloatWritable(1));
-					if(object.toString().equalsIgnoreCase("blankNode"))
+						System.out.println("empty subject");
+					}
+					
+					if(object.toString().equalsIgnoreCase("blankNode")){
+						System.out.println("empty object");
+
 						context.write(new Text("empty object"), new FloatWritable(1));
-					if(contxt.toString().equalsIgnoreCase("blankNode"))
+					}
+					if(contxt.toString().equalsIgnoreCase("blankNode")){
+						System.out.println("empty context");
+
 						context.write(new Text("empty context"), new FloatWritable(1));
+					}
 					
 					context.write(new Text("#ofTriples"), new FloatWritable(1));
 
@@ -155,7 +168,20 @@ public class MainJobC {
 
 				if(key.toString().contains("empty")){
 					countEmpty++;	
-					context.write(new Text("Empty context"), new FloatWritable(countEmpty));
+					if(key.toString().contains("subject")){
+						countEmptySubject++;
+					}
+					else if(key.toString().contains("object")){
+						countEmptyObject++;
+					}
+					else
+						countEmptyContext++;
+						
+					context.write(new Text("TotEmptySubject"), new FloatWritable(countEmptySubject));
+					context.write(new Text("TotEmptyObject"), new FloatWritable(countEmptyObject));
+					context.write(new Text("TotEmptyContext"), new FloatWritable(countEmptyContext));
+
+					context.write(new Text("TotEmpty"), new FloatWritable(countEmpty));
 
 				}
 				else if(key.toString().equalsIgnoreCase("#ofTriples")){
@@ -167,9 +193,12 @@ public class MainJobC {
 			
 			}
 			
-				if(totNumOfTriples != 0)
-					context.write(new Text("Percentage of blanknode: "), new FloatWritable((countEmpty*100)/totNumOfTriples));
-			
+				if(totNumOfTriples != 0){
+					context.write(new Text("Percentage of total blanknode: "), new FloatWritable((countEmpty*100)/totNumOfTriples));
+					context.write(new Text("Percentage of total blanknode Subject: "), new FloatWritable((countEmptySubject*100)/totNumOfTriples));
+					context.write(new Text("Percentage of total blanknode Object: "), new FloatWritable((countEmptyObject*100)/totNumOfTriples));
+					context.write(new Text("Percentage of total blanknode Context: "), new FloatWritable((countEmptyContext*100)/totNumOfTriples));
+				}
 		}
 
 		@Override
