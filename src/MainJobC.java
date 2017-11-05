@@ -5,7 +5,6 @@ import java.util.Scanner;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.FloatWritable;
-import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
@@ -109,9 +108,9 @@ public class MainJobC {
 					}
 					
 					if(object.toString().equalsIgnoreCase("blankNode")){
-						System.out.println("empty object");
+						System.out.println("empty object1");
 
-						context.write(new Text("empty object"), new FloatWritable(1));
+						context.write(new Text("empty object1"), new FloatWritable(1));
 					}
 					if(contxt.toString().equalsIgnoreCase("blankNode")){
 						System.out.println("empty context");
@@ -171,7 +170,7 @@ public class MainJobC {
 					if(key.toString().contains("subject")){
 						countEmptySubject++;
 					}
-					else if(key.toString().contains("object")){
+					else if(key.toString().contains("object1")){
 						countEmptyObject++;
 					}
 					else
