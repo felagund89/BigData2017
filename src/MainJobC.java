@@ -61,9 +61,7 @@ public class MainJobC {
 			job.setOutputValueClass(FloatWritable.class);
 
 			job.waitForCompletion(true);
-			System.out.println("num reduce task: " + job.getNumReduceTasks());
-			System.out.println("reduce progress: " + job.reduceProgress());
-			System.out.println("job status: " + job.getStatus().toString());
+			
 
 		} catch (Exception e) {
 
@@ -104,25 +102,16 @@ public class MainJobC {
 
 					if(subject.toString().equalsIgnoreCase("blankNode")){
 						context.write(new Text("empty subject"), new FloatWritable(1));
-						System.out.println("empty subject");
 					}
 					
 					if(object.toString().equalsIgnoreCase("blankNode")){
-						System.out.println("empty object1");
-
 						context.write(new Text("empty object1"), new FloatWritable(1));
 					}
 					if(contxt.toString().equalsIgnoreCase("blankNode")){
-						System.out.println("empty context");
-
 						context.write(new Text("empty context"), new FloatWritable(1));
 					}
-					
 					context.write(new Text("#ofTriples"), new FloatWritable(1));
-
 					
-//					System.out.println(subject.toString() +" " +object.toString()+" " + predicate.toString()+" "+ cont.toString());
-
 				}
 			}catch(Exception e){
 				e.printStackTrace();

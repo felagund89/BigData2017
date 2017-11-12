@@ -18,9 +18,16 @@ import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 /**
- * @author biar 5.Compute the percentage of triples with empty context, the
- *         percentage of triples whose subject is a blank node, and the
- *         percentage of triples whose object is a blank node.
+ * @author biar 
+ * 
+ * 
+ * 6. For each triple, compute the number of distinct contexts in which the triple appears
+ *	(the empty context counts as 1). Report the 10 triples with the largest number of distinct
+ *	contexts.
+ * 7. Remove duplicate triples (i.e., produce one or more output files in which triples have
+ *	no context and each triple appears only once).
+ * 
+ * 
  */
 public class MainJobD {
 
@@ -54,9 +61,7 @@ public class MainJobD {
 			job.setOutputValueClass(Text.class);
 
 			job.waitForCompletion(true);
-			System.out.println("num reduce task: " + job.getNumReduceTasks());
-			System.out.println("reduce progress: " + job.reduceProgress());
-			System.out.println("job status: " + job.getStatus().toString());
+			
 
 		} catch (Exception e) {
 
@@ -82,21 +87,15 @@ public class MainJobD {
 				Scanner scanner = new Scanner(value.toString());
 
 				scanner.useDelimiter("> .\\n<|> .\\n_|\\ .\\n_|\\ .\\n<");
-				Text node1 = new Text("node1");
-				Text edge = new Text("edge");
-				Text indegree = new Text("1");
 
 				while (scanner.hasNext()) {
 
 					word.set(scanner.next());
 					String tuple = word.toString();
 
-					//
-					HashMap<String, String> hashNode = Utility
-							.splitTuple(tuple);
+					HashMap<String, String> hashNode = Utility.splitTuple(tuple);
 
 					count++;
-					System.out.println("count: " + count);
 
 					Text subject = new Text(hashNode.get("subject"));
 					Text object = new Text(hashNode.get("object"));
@@ -144,45 +143,48 @@ public class MainJobD {
 		protected void reduce(Text key, Iterable<Text> values, Context context)
 				throws IOException, InterruptedException {
 
-			System.out.println("REDUCE: ");
 
 			for (Text value : values) {
 
 				String currentVal = value.toString();
 
-				HashSet<String> tempList = mapContext.get(key.toString());
+				HashSet<String> tempSet = mapContext.get(key.toString());
 
-				if (tempList == null) {
+				if (tempSet == null) {
 					
-					if(currentVal.equalsIgnoreCase("blankNode")){
-						hashblankNode.add(key.toString());
+					if(currentVal.equalsIgnoreCase("blankNode")){     //useful for point 7
+						hashblankNode.add(key.toString());          
 					}
-					tempList = new HashSet<String>();
-					tempList.add(currentVal);
-					mapContext.put(key.toString(), tempList);
-					mapNumberContext.put(key.toString(), 1);
+					tempSet = new HashSet<String>();
+					tempSet.add(currentVal);
+					mapContext.put(key.toString(), tempSet);
+					mapNumberContext.put(key.toString(), 1); //first time found
 				} else {
 					if(currentVal.equalsIgnoreCase("blankNode")){
 						hashblankNode.add(key.toString());
 					}
-						tempList.add(currentVal);
+						tempSet.add(currentVal);
+						
 						mapContext.remove(key.toString());
 						mapNumberContext.remove(key.toString());
-						mapContext.put(key.toString(), tempList);
-						mapNumberContext.put(key.toString(), tempList.size());
+						
+						mapContext.put(key.toString(), tempSet);
+						mapNumberContext.put(key.toString(), tempSet.size());
 				}
 
+				//point 7
 				context.write(new Text("\n"+"CONTEXT BLANKNODE"), new IntWritable(hashblankNode.size()));
-
 				String[] blankNodeArray = hashblankNode.toArray(new String[hashblankNode.size()]);
 				for (int i = 0; i < blankNodeArray.length; i++) {
 					context.write(new Text(blankNodeArray[i]) ,new IntWritable(0));
 				}
 				
+				//point 6
+				
 				int i = 0;
 				mapNumberContext = Utility.sortByValue(mapNumberContext);
 				context.write(new Text("\n"+"MAPPA PRIMI 10 maggiori context"), new IntWritable(count++));
-
+				
 				for (String keyText : mapNumberContext.keySet()) {
 					if(i<10){
 						context.write(new Text(keyText) ,new IntWritable(mapNumberContext.get(keyText)));
@@ -191,7 +193,6 @@ public class MainJobD {
 						break;
 					}
 				}
-
 			}
 
 		}

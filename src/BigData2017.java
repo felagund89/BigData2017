@@ -29,9 +29,7 @@ public class BigData2017 {
         // Create new file
         //String content = "This is the content to write into create file";
         
-
-        
-      
+    
 		List<String> otherArgs = new ArrayList<String>();
 
 		Configuration conf = new Configuration();
@@ -69,22 +67,24 @@ public class BigData2017 {
 			Path output = new Path(otherArgs.get(1));
 
 			
-//			MainJobA.runJobA(conf, input, output);
-//			MainJobB.runJobB(conf, input, output);
-			MainJobC.runJobC(conf, input, output);
+			//methods for run all the jobs 
+			
+			//POINT 1 & 3
+			MainJobA.runJobA(conf, input, output);
+			
+			//POINT 2 & 4
+			//MainJobB.runJobB(conf, input, output);
+			
+			//POINT 5
+			//MainJobC.runJobC(conf, input, output);
+			
+			//POINT 6 & 7
+			//MainJobD.runJobD(conf, input, output);
 
 			
 		} catch (Exception e) {
 
 			e.printStackTrace();
 		}
-
-
 	}
-
-
-
-	
-
 }
-

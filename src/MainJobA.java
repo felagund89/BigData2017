@@ -29,7 +29,8 @@ public class MainJobA {
 	public static HashSet<String> hashSetNodes = new HashSet<String>(); 
 	public static HashSet<String> hashSetEdges = new HashSet<String>(); 
 	public static HashMap<String, Integer> mapIndegree = new HashMap<>();
-	
+	public static HashMap<Integer, Integer> mapIndegreeFinal = new HashMap<>();
+
 	public static int count=0;
 	
 	public static void main(String[] args) {
@@ -59,9 +60,8 @@ public class MainJobA {
 			job.setOutputValueClass(Text.class);
 
 			job.waitForCompletion(true);
-			System.out.println("num reduce task: " + job.getNumReduceTasks());
-			System.out.println("reduce progress: " + job.reduceProgress());
-			System.out.println("job status: " + job.getStatus().toString());
+			
+		
 
 		} catch (Exception e) {
 
@@ -98,33 +98,22 @@ public class MainJobA {
 					
 					//
 					HashMap<String,String> hashNode = Utility.splitTuple(tuple);
-//					System.out.println("dopo nxparser..");
 					count++;
 					System.out.println("count: "+count);
 
 					Text subject = new Text(hashNode.get("subject"));
-//					System.out.println(subject.toString());
 
 					Text object = new Text(hashNode.get("object"));
-//					System.out.println(object.toString());
 
 					Text predicate = new Text(hashNode.get("predicate"));
-//					System.out.println(predicate.toString());
-//					System.out.println("------------------");
 
-					
-//					Text cont = new Text(hashNode.get("context"));
-//					System.out.println(cont.toString());
 	
 					context.write(node1, subject);
 					context.write(node1, object);
 					
-					
-
 					context.write(edge, predicate);
 					context.write(object, indegree);
 					
-//					System.out.println(subject.toString() +" " +object.toString()+" " + predicate.toString()+" "+ cont.toString());
 
 				}
 			}catch(Exception e){
@@ -163,8 +152,8 @@ public class MainJobA {
 			
 			System.out.println("REDUCE: ");
 			
+			Boolean indegree = false;
 			
-
 			for (Text value : values) {
 				
 				String currentVal = value.toString();
@@ -172,32 +161,31 @@ public class MainJobA {
 				if(key.toString().equalsIgnoreCase("node1")){
 					hashSetNodes.add(currentVal);				
 					context.write(new Text("nodes"), new IntWritable(hashSetNodes.size()));
-
+					indegree = false;
 				}
 				else if(key.toString().equalsIgnoreCase("edge")){
 					hashSetEdges.add(currentVal);				
 					context.write(new Text("edges"), new IntWritable(hashSetEdges.size()));
-
+					indegree = false;
 				}
 				else{
 					Integer countMap = mapIndegree.get(key.toString());
+					indegree = true;
 					if ( countMap == null){
 						mapIndegree.put(key.toString(), 1);
-						context.write(key, new IntWritable(1));
 
 					}
 					else{
 						mapIndegree.put(key.toString(), countMap+1);
-						context.write(key, new IntWritable(countMap+1));
-
+						
 					}
 					
 				}
 			
 			}
-			
-
-			
+			if(indegree){
+				context.write(new Text(key.toString()), new IntWritable(mapIndegree.get(key.toString())));
+			}
 		}
 
 		@Override

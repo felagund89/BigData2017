@@ -37,7 +37,6 @@ public class Utility {
 		Node[] linenode = parsedLine.next();
 		for(int i=0;i<linenode.length;i++){
 			String splittedStr = linenode[i].toString();
-//			System.out.println(linenode[i].toString());
 			if(splittedStr.startsWith("_:")){
 				//caso blankNode
 				hashNodes.put(lineKeys.get(i),"blankNode");
@@ -51,6 +50,8 @@ public class Utility {
 	}
 
 	
+	
+	//order map method
 	public static Map<String, Integer> sortByValue(Map<String, Integer> unsortMap) {
 
         List<Map.Entry<String, Integer>> list =

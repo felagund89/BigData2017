@@ -21,7 +21,7 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 /**
  * @author biar
- *	2.Compute the outdegree distribution;
+ *  2.Compute the outdegree distribution;
  *  4.Report the 10 nodes with maximum outdegree with their respective degrees.
  */public class MainJobB {
 	
@@ -58,10 +58,7 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 			job.setOutputValueClass(Text.class);
 
 			job.waitForCompletion(true);
-			System.out.println("num reduce task: " + job.getNumReduceTasks());
-			System.out.println("reduce progress: " + job.reduceProgress());
-			System.out.println("job status: " + job.getStatus().toString());
-
+			
 		} catch (Exception e) {
 
 			e.printStackTrace();
@@ -93,7 +90,6 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 					String tuple = word.toString();
 					HashMap<String,String> hashNode = Utility.splitTuple(tuple);
 					count++;
-//					System.out.println("count outdree: "+count);
 					Text subject = new Text(hashNode.get("subject"));
 					context.write(subject, outdegree);
 					
@@ -137,16 +133,13 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 			
 			for (Text value : values) {
 				
-//				String currentValue = value.toString(); 
 				Integer countMap = mapOutDegree.get(key.toString());
 				if ( countMap == null){
 					mapOutDegree.put(key.toString(), 1);
-//					context.write(key, new IntWritable(1));
 
 				}else{
 					mapOutDegree.put(key.toString(), countMap+1);
 
-//					context.write(key, new IntWritable(countMap+1));
 					
 				}
 				
